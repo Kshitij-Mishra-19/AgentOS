@@ -1,6 +1,6 @@
 #Yeh aapka Testing Code (Pytest) hai. Iska kaam yeh pakka karna hai ki jo Memory dataclass aapne sabse pehle banayi thi, woh sahi se kaam kar rahi hai ya nahi.
 
-from backend.memory.models import Memory, MemoryType
+from ..models import Memory, MemoryType
 
 
 def test_memory_creation():
