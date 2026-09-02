@@ -28,6 +28,7 @@ class MemoryInterface(ABC):
     def update(
         self,
         memory_id: str,
+        agent_id:str,
         content: str
     ):
         pass

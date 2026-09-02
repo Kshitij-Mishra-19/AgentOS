@@ -6,6 +6,8 @@ from .storage import InMemoryStorage, MemoryStorage
 
 from backend.memory.storage import InMemoryStorage, MemoryStorage, PostgresStorage
 
+from datetime import datetime
+
 class MemoryManager(MemoryInterface):
 
     def __init__(self, storage: MemoryStorage | None = None):
@@ -42,7 +44,10 @@ class MemoryManager(MemoryInterface):
 
             if memory.agent_id != agent_id:
                 continue
-
+            if (
+                memory.expires_at is not None and memory.expires_at <= datetime.utcnow()
+            ):
+                continue
             if query.lower() in memory.content.lower():
                 results.append(memory)
 
@@ -51,6 +56,7 @@ class MemoryManager(MemoryInterface):
     def update(
         self,
         memory_id: str,
+        agent_id : str,
         content: str
     ) -> Memory:
 
@@ -58,7 +64,8 @@ class MemoryManager(MemoryInterface):
 
         if memory is None:
             raise KeyError(f"Memory not found: {memory_id}")
-
+        if memory.agent_id != agent_id:
+            raise PermissionError("Agent cannot modify this memory")
         memory.content = content
 
         self.storage.save(memory)
@@ -67,12 +74,14 @@ class MemoryManager(MemoryInterface):
 
     def forget(
         self,
-        memory_id: str
+        memory_id: str,
+        agent_id : str
     ) -> None:
 
         memory = self.storage.get(memory_id)
 
         if memory is None:
             raise KeyError(f"Memory not found: {memory_id}")
-
+        if memory.agent_id != agent_id:
+            raise PermissionError("Agent cannot delete this memory")
         self.storage.delete(memory_id)

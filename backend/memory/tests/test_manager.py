@@ -1,5 +1,5 @@
 from ..manager import MemoryManager
-
+from datetime import datetime, timedelta
 
 def test_remember_and_recall():
 
@@ -31,6 +31,7 @@ def test_update():
 
     manager.update(
         memory.id,
+        "test-agent",
         "New information"
     )
 
@@ -59,7 +60,70 @@ def test_forget():
         memory_type="working"
     )
 
-    manager.forget(memory.id)
+    manager.forget(memory.id , "test-agent")
+
+    results = manager.recall(
+        agent_id="test-agent",
+        query="Temporary"
+    )
+
+    assert results == []
+
+def test_agent_cannot_modify_other_agents_memory():
+
+    manager = MemoryManager()
+
+    memory = manager.remember(
+        agent_id="research-agent",
+        content="Private research information",
+        memory_type="episodic"
+    )
+
+    try:
+        manager.update(
+            memory.id,
+            "code-agent",
+            "Malicious modification"
+        )
+        assert False
+    except PermissionError:
+        pass
+
+
+
+def test_agent_cannot_delete_other_agents_memory():
+
+    manager = MemoryManager()
+
+    memory = manager.remember(
+        agent_id="research-agent",
+        content="Private research information",
+        memory_type="episodic"
+    )
+
+    try:
+        manager.forget(
+            memory.id,
+            "code-agent"
+        )
+        assert False
+    except PermissionError:
+        pass
+
+
+def test_expired_memory_is_not_recalled():
+
+    manager = MemoryManager()
+
+    memory = manager.remember(
+        agent_id="test-agent",
+        content="Temporary information",
+        memory_type="working"
+    )
+
+    memory.expires_at = datetime.utcnow() - timedelta(minutes=1)
+
+    manager.storage.save(memory)
 
     results = manager.recall(
         agent_id="test-agent",
