@@ -34,7 +34,19 @@ def test_update():
         "New information"
     )
 
-    assert memory.content == "New information"
+    # 1. Fetch the updated results from the database
+    results = manager.recall(
+        agent_id="test-agent",
+        query="New information"
+    )
+
+    # 2. Extract the updated item from the returned list
+    assert len(results) > 0
+    updated_memory = results[0]
+
+    # 3. Assert against the freshly pulled record
+    assert updated_memory.content == "New information"
+
 
 
 def test_forget():

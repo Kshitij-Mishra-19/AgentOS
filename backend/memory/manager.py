@@ -4,11 +4,12 @@ from .interfaces import MemoryInterface
 from .models import Memory, MemoryType
 from .storage import InMemoryStorage, MemoryStorage
 
+from backend.memory.storage import InMemoryStorage, MemoryStorage, PostgresStorage
 
 class MemoryManager(MemoryInterface):
 
     def __init__(self, storage: MemoryStorage | None = None):
-        self.storage = storage or InMemoryStorage()
+        self.storage = storage or PostgresStorage()
 
     def remember(
         self,
