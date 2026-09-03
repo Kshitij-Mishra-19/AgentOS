@@ -1,4 +1,5 @@
 from collections import deque
+#we used deque bcz it has functions append()-add job at the back and popleft()-remove job from thr front
 
 from backend.models.job import Job
 from backend.models.enums import PriorityLevel
@@ -26,7 +27,7 @@ class MLFQScheduler:
         return None
 
 
-
+#testing code aka demo code
 if __name__ == "__main__":
 
     from backend.models.job import Job
