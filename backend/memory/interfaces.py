@@ -25,6 +25,15 @@ class MemoryInterface(ABC):
         pass
 
     @abstractmethod
+    def search(
+        self,
+        agent_id: str,
+        query: str,
+        limit: int = 5
+    ):
+        pass
+    
+    @abstractmethod
     def update(
         self,
         memory_id: str,

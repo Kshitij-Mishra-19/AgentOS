@@ -1,7 +1,7 @@
 #Yeh Python code ek AI Agent ke liye "Memory" (Yaaddasht) ka system banane ke liye hai. Jaise insaano ke paas alag-alag tarah ki memory hoti hai, vaise hi yeh code AI ko cheezein yaad rakhne me madad karta hai.
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 from uuid import uuid4

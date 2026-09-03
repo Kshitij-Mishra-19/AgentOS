@@ -59,11 +59,12 @@ class PostgresStorage(MemoryStorage):
                         created_at,
                         updated_at,
                         expires_at,
-                        metadata
+                        metadata,
+                        embedding
                     )
                     VALUES (
                         %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s
+                        %s, %s, %s, %s, %s, %s
                     )
                     ON CONFLICT (id)
                     DO UPDATE SET
@@ -73,7 +74,8 @@ class PostgresStorage(MemoryStorage):
                         confidence = EXCLUDED.confidence,
                         updated_at = EXCLUDED.updated_at,
                         expires_at = EXCLUDED.expires_at,
-                        metadata = EXCLUDED.metadata
+                        metadata = EXCLUDED.metadata,
+                        embedding = EXCLUDED.embedding
                     """,
                     (
                         memory.id,
@@ -85,7 +87,8 @@ class PostgresStorage(MemoryStorage):
                         memory.created_at,
                         memory.updated_at,
                         memory.expires_at,
-                        json.dumps(memory.metadata)
+                        json.dumps(memory.metadata),
+                        memory.embedding
                     )
                 )
 
@@ -108,7 +111,8 @@ class PostgresStorage(MemoryStorage):
                         created_at,
                         updated_at,
                         expires_at,
-                        metadata
+                        metadata,
+                        embedding
                     FROM memories
                     WHERE id = %s
                     """,
@@ -139,7 +143,8 @@ class PostgresStorage(MemoryStorage):
                         created_at,
                         updated_at,
                         expires_at,
-                        metadata
+                        metadata,
+                        embedding
                     FROM memories
                     """
                 )
@@ -176,5 +181,6 @@ class PostgresStorage(MemoryStorage):
             created_at=row[6],
             updated_at=row[7],
             expires_at=row[8],
-            metadata=row[9] or {}
+            metadata=row[9] or {},
+            embedding = row[10]
         )
