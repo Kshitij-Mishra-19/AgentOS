@@ -280,3 +280,51 @@ def test_failed_task_has_no_result():
     assert result.status == TaskStatus.FAILED
     assert result.result is None
     assert result.error == "Simulated task failure"
+
+def test_task_completion_time_is_after_start_time():
+
+    agent = Agent(
+        name="Research Agent",
+        agent_type="research"
+    )
+
+    agent.mark_ready()
+    agent.start()
+
+    task = Task(
+        agent_id=agent.id,
+        description="Check task timestamps."
+    )
+
+    task.queue()
+
+    executor = SimpleTaskExecutor()
+
+    result = executor.execute(agent, task)
+
+    assert result.started_at is not None
+    assert result.completed_at is not None
+    assert result.completed_at >= result.started_at
+
+def test_paused_agent_cannot_execute_task():
+
+    agent = Agent(
+        name="Research Agent",
+        agent_type="research"
+    )
+
+    agent.mark_ready()
+    agent.start()
+    agent.pause()
+
+    task = Task(
+        agent_id=agent.id,
+        description="Research something."
+    )
+
+    task.queue()
+
+    executor = SimpleTaskExecutor()
+
+    with pytest.raises(RuntimeError):
+        executor.execute(agent, task)

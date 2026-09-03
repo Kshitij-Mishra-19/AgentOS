@@ -62,5 +62,25 @@ class Agent:
 
         self.status = AgentStatus.STOPPED
 
+    def __post_init__(self):
+
+        if not isinstance(self.name, str):
+            raise TypeError("Agent name must be a string")
+
+        if not self.name.strip():
+            raise ValueError("Agent name cannot be empty")
+
+        if not isinstance(self.agent_type, str):
+            raise TypeError("Agent type must be a string")
+
+        if not self.agent_type.strip():
+            raise ValueError("Agent type cannot be empty")
+
+        if not isinstance(self.capabilities, list):
+            raise TypeError("Agent capabilities must be a list")
+
+        if not all(isinstance(capability, str) for capability in self.capabilities):
+            raise TypeError("Agent capabilities must contain only strings")
+
     def fail(self):
         self.status = AgentStatus.FAILED

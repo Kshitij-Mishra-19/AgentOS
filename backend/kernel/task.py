@@ -25,6 +25,13 @@ class Task:
     priority: int = 5
 
     def __post_init__(self):
+
+        if not isinstance(self.description, str):
+            raise TypeError("Task description must be a string")
+
+        if not self.description.strip():
+            raise ValueError("Task description cannot be empty")
+
         if not isinstance(self.priority, int):
             raise TypeError("Task priority must be an integer")
 

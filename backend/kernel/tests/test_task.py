@@ -191,3 +191,26 @@ def test_non_cancellable_task_cannot_be_cancelled():
 
         with pytest.raises(RuntimeError):
             task.cancel()
+
+def test_task_rejects_empty_description():
+
+    with pytest.raises(ValueError):
+        Task(
+            agent_id="agent-123",
+            description=""
+        )
+
+    with pytest.raises(ValueError):
+        Task(
+            agent_id="agent-123",
+            description="   "
+        )
+
+
+def test_task_rejects_non_string_description():
+
+    with pytest.raises(TypeError):
+        Task(
+            agent_id="agent-123",
+            description=123
+        )

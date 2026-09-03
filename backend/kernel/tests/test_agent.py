@@ -74,3 +74,62 @@ def test_agent_failure():
     agent.fail()
 
     assert agent.status == AgentStatus.FAILED
+
+def test_agent_rejects_empty_name():
+
+    with pytest.raises(ValueError):
+        Agent(
+            name="",
+            agent_type="research"
+        )
+
+    with pytest.raises(ValueError):
+        Agent(
+            name="   ",
+            agent_type="research"
+        )
+
+
+def test_agent_rejects_empty_agent_type():
+
+    with pytest.raises(ValueError):
+        Agent(
+            name="Research Agent",
+            agent_type=""
+        )
+
+    with pytest.raises(ValueError):
+        Agent(
+            name="Research Agent",
+            agent_type="   "
+        )
+
+def test_agent_rejects_invalid_capabilities():
+
+    with pytest.raises(TypeError):
+        Agent(
+            name="Research Agent",
+            agent_type="research",
+            capabilities="research"
+        )
+
+    with pytest.raises(TypeError):
+        Agent(
+            name="Research Agent",
+            agent_type="research",
+            capabilities=["research", 123]
+        )
+
+def test_agent_accepts_valid_capabilities():
+
+    agent = Agent(
+        name="Research Agent",
+        agent_type="research",
+        capabilities=["search", "summarize", "analyze"]
+    )
+
+    assert agent.capabilities == [
+        "search",
+        "summarize",
+        "analyze"
+    ]
