@@ -26,52 +26,54 @@ class Scheduler:
     def get_next_job(self) -> Job | None:
         return self.mlfq.get_next_job()
 
+    def run_next_job(self, runtime) -> bool:
+        job = self.get_next_job()
 
+        if job is None:
+            return False
 
+        success = runtime.run_job(job)
 
+        if success:
+            self.mark_job_completed(job)
 
-if __name__ == "__main__":
+        return success
 
-    from backend.models.enums import PriorityLevel, JobStatus
+    def run_all(self, runtime):
+        """
+        Run all currently READY jobs.
 
-    scheduler = Scheduler()
+        Failed jobs do not stop the complete scheduler.
+        Other independent jobs can still execute.
+        """
 
-    j1 = Job(
-        name="Research",
-        agent_type="research",
-        priority=PriorityLevel.HIGH
-    )
+        while True:
+            job = self.get_next_job()
 
-    j2 = Job(
-        name="Coding",
-        agent_type="coding",
-        priority=PriorityLevel.MEDIUM,
-        dependencies=[j1.job_id]
-    )
+            if job is None:
+                break
 
-    j3 = Job(
-        name="Testing",
-        agent_type="testing",
-        priority=PriorityLevel.LOW,
-        dependencies=[j2.job_id]
-    )
+            success = runtime.run_job(job)
 
-    scheduler.add_job(j1)
-    scheduler.add_job(j2)
-    scheduler.add_job(j3)
+            if success:
+                self.mark_job_completed(job)
 
-    print("Initial states:")
-    print("J1:", j1.status)
-    print("J2:", j2.status)
-    print("J3:", j3.status)
+            else:
+                # Failed job ko dobara queue mein add nahi karna.
+                # Baaki READY jobs execute hoti rahengi.
+                print(f"Scheduler: Job failed - {job.name}")
 
-    print("\nFirst job selected:")
-    job = scheduler.get_next_job()
-    print(job.name)
+    def mark_job_completed(self, job: Job):
+        job.status = JobStatus.COMPLETED
 
-    j1.status = JobStatus.COMPLETED
+        for dependent_job in self.jobs.values():
 
-    scheduler.dependency_manager.update_job_status(j2, scheduler.jobs)
+            if dependent_job.status == JobStatus.PENDING:
 
-    print("\nAfter J1 completes:")
-    print("J2:", j2.status)
+                self.dependency_manager.update_job_status(
+                    dependent_job,
+                    self.jobs
+                )
+
+                if dependent_job.status == JobStatus.READY:
+                    self.mlfq.add_job(dependent_job)
