@@ -1,0 +1,14 @@
+# Default configuration for the Executor agent.
+
+agent_id: executor
+role: executor
+enabled: true
+
+execution:
+  # Whether the Executor may emit NEEDS_CLARIFICATION back to the Planner.
+  allow_clarification_requests: true
+  # Simulated per-subtask timeout budget (seconds); informational for now.
+  timeout_seconds: 30
+
+logging:
+  level: INFO

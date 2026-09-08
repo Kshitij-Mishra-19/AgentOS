@@ -1,0 +1,15 @@
+# Default configuration for the Planner agent.
+# Loaded by the orchestrator/CLI and merged with config/collaboration.yaml.
+
+agent_id: planner
+role: planner
+enabled: true
+
+planning:
+  # Maximum number of subtasks the Planner should produce for a single task.
+  max_subtasks: 6
+  # Whether the Planner is allowed to assign subtasks to roles other than "executor".
+  allow_multi_role_assignment: false
+
+logging:
+  level: INFO

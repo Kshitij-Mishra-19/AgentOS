@@ -1,0 +1,33 @@
+# Top-level configuration for the standalone agent collaboration system.
+# Loaded once at startup (CLI or examples) and passed into the orchestrator
+# and agents. Nothing in this file is a secret; secrets belong in a local
+# .env file (see .env.example) and are read from environment variables.
+
+system:
+  name: standalone-agent-collaboration
+  max_revision_cycles: 3
+
+agents:
+  planner:
+    enabled: true
+    config_path: agents/planner/config.yaml
+  executor:
+    enabled: true
+    config_path: agents/executor/config.yaml
+  reviewer:
+    enabled: true
+    config_path: agents/reviewer/config.yaml
+
+workflow:
+  require_review: true
+  fail_fast: false
+
+llm:
+  # "mock" runs entirely offline/deterministically -- no API key required.
+  # "real" expects a concrete RealLLMProvider subclass to be wired in by
+  # the application; see core/llm_provider.py and README.md.
+  provider: mock
+  api_key_env_var: LLM_API_KEY
+
+logging:
+  level: INFO

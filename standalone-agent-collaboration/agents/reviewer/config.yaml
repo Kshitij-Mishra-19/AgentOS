@@ -1,0 +1,15 @@
+# Default configuration for the Reviewer agent.
+
+agent_id: reviewer
+role: reviewer
+enabled: true
+
+review:
+  # Minimum score (0.0-1.0) required for automatic approval when the
+  # provider returns a borderline decision.
+  approval_score_threshold: 0.7
+  # Whether any executor-reported error automatically forces rejection.
+  reject_on_any_error: true
+
+logging:
+  level: INFO

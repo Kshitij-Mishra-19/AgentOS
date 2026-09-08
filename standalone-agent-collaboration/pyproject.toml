@@ -1,0 +1,27 @@
+[project]
+name = "standalone-agent-collaboration"
+version = "0.1.0"
+description = "A standalone, reusable 3-agent (Planner/Executor/Reviewer) collaboration architecture."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["agents", "agents.planner", "agents.executor", "agents.reviewer", "core", "schemas", "app"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
