@@ -1,3 +1,4 @@
+import Tasks from "./pages/Tasks";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Agents from "./pages/Agents";
@@ -28,6 +29,7 @@ function App() {
           <Routes>
   <Route path="/" element={<Dashboard />} />
   <Route path="/agents" element={<Agents />} />
+  <Route path="/tasks" element={<Tasks />} />
 </Routes>
         </main>
 
