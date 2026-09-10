@@ -1,5 +1,3 @@
-#Yeh code ek Blueprint (Naksha) hai jise programming me CRUD (Create, Read, Update, Delete) operations kehte hain. Yeh yeh tay karta hai ki AI ka memory system kaam kaise karega, par yeh khud kaam nahi karta (kyunki isme pass likha hai).
-
 from abc import ABC, abstractmethod
 from typing import Any
 
