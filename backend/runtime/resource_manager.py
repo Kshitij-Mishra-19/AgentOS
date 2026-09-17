@@ -1,35 +1,88 @@
+from threading import Condition
+
+
 class ResourceManager:
 
-    def __init__(self, limits: dict[str, int]):
+    def __init__(
+        self,
+        limits: dict[str, int]
+    ):
+
         self.limits = limits
         self.active_jobs: dict[str, int] = {}
+        self.condition = Condition()
 
-    def can_execute(self, agent_type: str) -> bool:
-        limit = self.limits.get(agent_type)
+    def can_execute(
+        self,
+        agent_type: str
+    ) -> bool:
 
-        if limit is None:
-            return False
+        with self.condition:
 
-        active = self.active_jobs.get(agent_type, 0)
+            limit = self.limits.get(agent_type)
 
-        return active < limit
+            if limit is None:
+                return False
 
-    def acquire(self, agent_type: str) -> bool:
-        if not self.can_execute(agent_type):
-            return False
+            active = self.active_jobs.get(
+                agent_type,
+                0
+            )
 
-        self.active_jobs[agent_type] = (
-            self.active_jobs.get(agent_type, 0) + 1
-        )
+            return active < limit
 
-        return True
+    def acquire(
+        self,
+        agent_type: str
+    ) -> bool:
 
-    def release(self, agent_type: str):
-        if agent_type in self.active_jobs:
-            self.active_jobs[agent_type] -= 1
+        with self.condition:
 
-            if self.active_jobs[agent_type] == 0:
-                del self.active_jobs[agent_type]
+            limit = self.limits.get(agent_type)
 
-    def get_active_count(self, agent_type: str) -> int:
-        return self.active_jobs.get(agent_type, 0)
+            if limit is None:
+                return False
+
+            while (
+                self.active_jobs.get(
+                    agent_type,
+                    0
+                ) >= limit
+            ):
+                self.condition.wait()
+
+            self.active_jobs[agent_type] = (
+                self.active_jobs.get(
+                    agent_type,
+                    0
+                ) + 1
+            )
+
+            return True
+
+    def release(
+        self,
+        agent_type: str
+    ):
+
+        with self.condition:
+
+            if agent_type in self.active_jobs:
+
+                self.active_jobs[agent_type] -= 1
+
+                if self.active_jobs[agent_type] <= 0:
+                    del self.active_jobs[agent_type]
+
+            self.condition.notify_all()
+
+    def get_active_count(
+        self,
+        agent_type: str
+    ) -> int:
+
+        with self.condition:
+            return self.active_jobs.get(
+                agent_type,
+                0
+            )

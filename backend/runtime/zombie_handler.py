@@ -1,5 +1,4 @@
-#right now failed job==zombie
-#later we'll stuck/timeout job==zombie
+from datetime import datetime
 
 from backend.models.job import Job
 from backend.models.enums import JobStatus
@@ -7,22 +6,44 @@ from backend.models.enums import JobStatus
 
 class ZombieHandler:
 
-    def is_zombie(self, job: Job) -> bool:
-        """
-        Checks whether a job is stuck or failed.
-        """
+    def __init__(
+        self,
+        timeout_seconds: float = 60
+    ):
 
-        return job.status == JobStatus.FAILED
+        self.timeout_seconds = timeout_seconds
 
-    def handle_zombie(self, job: Job) -> None:
-        """
-        Handles a zombie job.
+    def is_zombie(
+        self,
+        job: Job
+    ) -> bool:
 
-        Actual retry/recovery logic will be added later.
-        """
+        if job.status != JobStatus.RUNNING:
+            return False
 
-        if self.is_zombie(job):
-            print(f"Zombie job detected: {job.name}")
+        if job.started_at is None:
+            return False
 
-            # Recovery logic will be connected later.
-            # For now, keep the job marked as FAILED.
+        elapsed = (
+            datetime.now() - job.started_at
+        ).total_seconds()
+
+        return elapsed > self.timeout_seconds
+
+    def recover(
+        self,
+        job: Job
+    ) -> bool:
+
+        if not self.is_zombie(job):
+            return False
+
+        job.status = JobStatus.FAILED
+
+        job.error = (
+            "Job timeout / zombie detected"
+        )
+
+        job.completed_at = datetime.now()
+
+        return True
