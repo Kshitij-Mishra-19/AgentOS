@@ -1,42 +1,29 @@
-function Agents() {
-  const agents = [
-    {
-      name: "Planner Agent",
-      status: "Running"
-    },
-    {
-      name: "Research Agent",
-      status: "Running"
-    },
-    {
-      name: "Code Agent",
-      status: "Working"
-    },
-    {
-      name: "Test Agent",
-      status: "Idle"
-    },
-    {
-      name: "Documentation Agent",
-      status: "Idle"
-    }
-  ]
+import { useEffect, useState } from "react";
+
+export default function Agents() {
+  const [agents, setAgents] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/agents")
+      .then((r) => r.json())
+      .then(setAgents)
+      .catch(() => {});
+  }, []);
 
   return (
     <div>
       <h1>Agents</h1>
-      <p>Manage and monitor AgentOS agents</p>
+      <p>Available agents in AgentOS</p>
 
-      <div className="agents">
+      <div className="agents" style={{ marginTop: 24 }}>
         {agents.map((agent) => (
-          <div className="agent" key={agent.name}>
+          <div className="agent" key={agent.type}>
             <h3>{agent.name}</h3>
-            <p>{agent.status}</p>
+            <p style={{ color: "#6b7280", fontSize: 14, margin: "8px 0" }}>{agent.description}</p>
+            <p>🟢 Ready</p>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
-
-export default Agents

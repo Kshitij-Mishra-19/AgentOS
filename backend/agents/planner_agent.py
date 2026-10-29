@@ -29,13 +29,24 @@ class PlannerAgent:
         print(f"[PlannerAgent] Planning goal: {goal}")
         raw = call_llm(SYSTEM_PROMPT, f"Goal: {goal}")
 
-        # Strip markdown code fences if present
         raw = raw.strip()
+
+        # Strip <think>...</think> blocks (qwen reasoning model)
+        import re
+        raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
+
+        # Strip markdown code fences
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"):
                 raw = raw[4:]
             raw = raw.strip()
+
+        # Extract first JSON array found
+        start = raw.find("[")
+        end = raw.rfind("]") + 1
+        if start != -1 and end > start:
+            raw = raw[start:end]
 
         tasks = json.loads(raw)
         print(f"[PlannerAgent] Created {len(tasks)} tasks.")

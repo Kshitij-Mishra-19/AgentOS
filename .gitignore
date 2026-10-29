@@ -5,8 +5,7 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
-data/chroma/
-data/test_chroma/
+data/
 output/
 *.tmp
 *.log
